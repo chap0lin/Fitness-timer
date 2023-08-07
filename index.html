@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gym Timer</title>
+  <style>
+    html {
+      height: 100%;
+    }
+    body {
+      margin: 0;
+      background-color: rgb(96, 0, 21);
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+    .container {
+      width: 90vw;
+      padding-bottom: 32px;
+      background-color: rgb(13,16,12);
+      border-radius: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .final-modal {
+      position: absolute;
+      top: auto;
+      left: auto;
+      width: 80vw;
+      background-color: blanchedalmond;
+      border-radius: 20px;
+    }
+    .final-modal h2 {
+      text-align: center;
+      font-size: 40px;
+    }
+    .final-modal h3 {
+      text-align: center;
+      font-size: 32px;
+    }
+    .hidden {
+      display: none;
+    }
+    p {
+      color: white;
+      text-align: center;
+    }
+    #timer-h {
+      font-size: 24px;
+    }
+    #timer-n {
+      font-size: 60px;
+    }
+    #exercise {
+      font-size: 32px;
+    }
+    button {
+      font-size: 32px;
+
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <p id="timer-h">MM:SS</p>
+    <p id="timer-n">MM:SS</p>
+    <p id="exercise">Pulldown</p>
+    <button id="start">Start</button>
+    <button id="next-btn" disabled>NEXT</button>
+  </div>
+  <div class="final-modal hidden">
+    <h2>Workout Ended!</h2>
+    <h3>Good Job!</h3>
+  </div>
+  <script>
+    const timerh = document.getElementById("timer-h")
+    const timern = document.getElementById("timer-n")
+    const exercise = document.getElementById("exercise")
+    const nextBtn = document.getElementById("next-btn")
+    const startBtn = document.getElementById("start")
+  
+    let workoutTimestamp
+    let workoutTimer
+    let exerciseTimestamp
+    let exerciseTimer
+    let started = false;
+
+    const workout = [
+      { action: "Bench Press (set 1)", duration: 30},
+      { action: "Pulldown (set 1)", duration: 30},
+      { action: "Squat (set 1)", duration: 30},
+      { action: "Bench Press (set 2)", duration: 30},
+      { action: "Pulldown (set 2)", duration: 30},
+      { action: "Squat (set 2)", duration: 30},
+      { action: "Bench Press (set 3)", duration: 30},
+      { action: "Pulldown (set 3)", duration: 30},
+      { action: "Squat (set 3)", duration: 30},
+      { action: "Bench Press (set 4)", duration: 30},
+      { action: "Pulldown (set 4)", duration: 30},
+      { action: "Squat (set 4)", duration: 30},
+      { action: "Rest + Setup", duration: 120},
+      { action: "Adduction (set 1)", duration: 30},
+      { action: "Abduction (set 1)", duration: 30},
+      { action: "Lateral Raises (set 1)", duration: 30},
+      { action: "Adduction (set 2)", duration: 30},
+      { action: "Abduction (set 2)", duration: 30},
+      { action: "Lateral Raises (set 2)", duration: 30},
+      { action: "Adduction (set 3)", duration: 30},
+      { action: "Abduction (set 3)", duration: 30},
+      { action: "Lateral Raises (set 3)", duration: 30},
+      { action: "Adduction (set 4)", duration: 30},
+      { action: "Abduction (set 4)", duration: 30},
+      { action: "Lateral Raises (set 4)", duration: 30},
+    ]
+
+    let currentExerciseIndex = 0;
+    exercise.innerText = workout[currentExerciseIndex].action
+
+
+    nextBtn.addEventListener("click", () => {
+      currentExerciseIndex += 1;
+      if (currentExerciseIndex >= workout.length) {
+        return document.querySelector(".final-modal").classList.remove("hidden")
+      }
+      exercise.innerText = workout[currentExerciseIndex].action
+
+      startExerciseTimer()
+    })
+
+    workoutTimerCycle = () => {
+      let currentTime = (Date.now() - workoutTimestamp)/1000;
+      let SS = (currentTime%60).toFixed(0)
+      let S = SS.length === 2 ? "" : "0"
+      let MM = `${Math.floor(currentTime/60)}`;
+      let M = MM.length === 2 ? "" : "0"
+      timerh.innerText = `${M}${MM}:${S}${SS}`
+    }
+
+    startWorkoutTimer = () => {
+      workoutTimer = setInterval(workoutTimerCycle, 111);
+    }
+
+    exerciseTimerCycle = () => {
+      let currentTime = (exerciseTimestamp - Date.now())/1000;
+      let SS = (Math.abs(currentTime)%60).toFixed(0)
+      let S = SS.length === 2 ? "" : "0"
+      let MM = currentTime > 0 ? `${Math.floor(currentTime/60)}` : `-${Math.floor(Math.abs(currentTime)/60)}`;
+      let M = currentTime > 0 && MM.length === 1 ? "0" : ""
+      timern.innerText = `${M}${MM}:${S}${SS}`
+    }
+
+    startExerciseTimer = () => {
+      exerciseTimestamp = Date.now() + workout[currentExerciseIndex].duration * 1000;
+      exerciseTimer = setInterval(exerciseTimerCycle, 111);
+    }
+
+    startBtn.addEventListener("click", () => {
+      startBtn.style.display = "none";
+      nextBtn.disabled = false
+      workoutTimestamp = Date.now();
+      exerciseTimestamp = Date.now();
+      startWorkoutTimer();
+      startExerciseTimer()
+    })
+
+
+
+
+
+  </script>
+</body>
+</html>
